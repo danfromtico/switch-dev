@@ -2,7 +2,7 @@
 # autorunhq/switch-dev: devkitA64 with everything Autorun and other Horizon
 # ports build against, each from a pinned revision:
 #   libnx         switchbrew/libnx, newer than devkitPro's release
-#   mesa-switch   Mesa 26 for Horizon: EGL/OpenGL through nvc0, NVK Vulkan
+#   mesa-switch   Mesa 26 for Horizon: EGL/OpenGL through nvc0 or Zink, NVK Vulkan
 #   lsfg-vk       LSFG-VK's backend with the Horizon port in lsfg/
 #   libusbhsfs    with the UASP transport in libusbhsfs/
 # and the tools to build them and more: Meson, CMake, Ninja, glslang,

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Build mesa-switch (Mesa 26 for Horizon: EGL and OpenGL through Gallium nvc0,
-# and loaderless NVK Vulkan, over the port's own Horizon backend) from the
+# Build mesa-switch (Mesa 26 for Horizon: EGL and OpenGL through Gallium nvc0
+# or Zink, and loaderless NVK Vulkan, over the port's own Horizon backend) from the
 # checkout in the current directory, and install it into portlibs. OpenGL and
 # Vulkan come from one Meson build, so a program links one copy of Mesa for both.
 set -euo pipefail
@@ -41,7 +41,9 @@ export PATH="$tools/src/compiler/clc:$tools/src/compiler/spirv:$PATH"
 # (native: true) are built by the real rustc for the machine they run on.
 export MESA_SWITCH_RUST_TARGET=aarch64-unknown-linux-gnu
 
-# build-opengl.sh's EGL/OpenGL options with build-switch.sh's NVK.
+# build-unified.sh's options: EGL/OpenGL with both Gallium drivers, nvc0 and
+# Zink (OpenGL on NVK), and NVK. A program picks the GL driver at run time
+# with MESA_SWITCH_GL_DRIVER=nvc0|zink before its first eglGetDisplay.
 meson setup /tmp/mesa-build \
     --cross-file switch_cross_file.txt \
     --default-library=static \
@@ -52,7 +54,7 @@ meson setup /tmp/mesa-build \
     -Db_lto=false \
     -Db_ndebug=true \
     -Dvulkan-drivers=nouveau \
-    -Dgallium-drivers=nouveau \
+    -Dgallium-drivers=nouveau,zink \
     -Dgallium-rusticl=false \
     -Dplatforms=switch \
     -Degl-native-platform=switch \

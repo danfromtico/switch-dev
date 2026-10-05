@@ -7,7 +7,7 @@ each from a pinned revision, and the tools to build more.
 | In portlibs | Revision | |
 |---|---|---|
 | [libnx](https://github.com/switchbrew/libnx) | `146c3d14` | newer than devkitPro's 4.12.0 release |
-| [mesa-switch](https://github.com/danfromtico/mesa-switch) | `d4a00ea0` | Mesa 26: EGL, OpenGL and GLES through nvc0, and loaderless NVK Vulkan, over a Horizon backend written against libnx. Replaces devkitPro's Mesa 20.1 and libdrm_nouveau. |
+| [mesa-switch](https://github.com/danfromtico/mesa-switch) | `d4a00ea0` | Mesa 26: EGL, OpenGL and GLES through nvc0 or Zink (OpenGL on NVK, picked with `MESA_SWITCH_GL_DRIVER`), and loaderless NVK Vulkan, over a Horizon backend written against libnx. Replaces devkitPro's Mesa 20.1 and libdrm_nouveau. |
 | [lsfg-vk](https://git.lsfg-vk.dev/lsfg-vk-archive.git) | `8b0da266` | the last GPL archive revision, with the Horizon port in `lsfg/`: `liblsfg-vk.a` |
 | [libusbhsfs](https://github.com/ITotalJustice/libusbhsfs) | `625269b7` | with the UASP transport in `libusbhsfs/`, FAT and exFAT only: `libusbhsfs.a` |
 
