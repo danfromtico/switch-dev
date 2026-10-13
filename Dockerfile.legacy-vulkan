@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1
+# switch-dev-legacy with Vulkan: danfromtico/switch-dev-legacy's legacy OpenGL
+# stack (devkitPro's Mesa 20.1 EGL/OpenGL/GLES through nvc0, and
+# libdrm_nouveau), untouched, plus NVK -- mesa-switch's loaderless Vulkan over
+# its own Horizon backend -- built alone, so no OpenGL file is replaced.
+#
+# One program can link both, and pick its renderer at run time: the Mesa
+# internals NVK shares with the legacy OpenGL (blob_*, nir_*, util_* and more)
+# are renamed mesa_nvk_* in libvulkan.a (mesa/build-vulkan.sh), so neither
+# Mesa calls into the other.
+#
+#   docker build -f Dockerfile.legacy-vulkan -t switch-dev-legacy-vulkan .
+
+ARG LEGACY_IMAGE=ghcr.io/danfromtico/switch-dev-legacy:2026.10.05.1
+
+# --- NVK -------------------------------------------------------------------------
+FROM ${LEGACY_IMAGE} AS nvk
+
+ARG MESA_SWITCH_REPOSITORY=https://github.com/danfromtico/mesa-switch.git
+ARG MESA_SWITCH_REVISION=0ff52079ca9e9e837ed27eb95a8d239f439a1864
+ARG SPIRV_TOOLS_TAG=vulkan-sdk-1.3.290.0
+
+# switch-dev's Mesa tools the legacy image does not have: LLVM/Clang 15 and
+# libclc for mesa_clc, SPIRV-Tools 2024.1 or later, the AArch64 ELF Rust std,
+# bindgen and cbindgen.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        clang libclang-dev llvm-15-dev libllvmspirvlib-15-dev libclc-15-dev libclang-15-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN git clone --depth 1 --branch ${SPIRV_TOOLS_TAG} https://github.com/KhronosGroup/SPIRV-Tools.git /tmp/spirv-tools \
+    && git clone --depth 1 --branch ${SPIRV_TOOLS_TAG} https://github.com/KhronosGroup/SPIRV-Headers.git /tmp/spirv-tools/external/spirv-headers \
+    && cmake -S /tmp/spirv-tools -B /tmp/spirv-tools/build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local -DSPIRV_SKIP_TESTS=ON \
+    && ninja -C /tmp/spirv-tools/build install \
+    && rm -rf /tmp/spirv-tools
+RUN rustup target add aarch64-unknown-linux-gnu \
+    && cargo install --locked bindgen-cli@0.73.2 cbindgen@0.29.4 \
+    && rm -rf /root/.cargo/registry /root/.cargo/git
+
+COPY mesa/build-vulkan.sh /usr/local/share/switch-dev/mesa-build-vulkan.sh
+RUN git init -q /tmp/mesa-switch \
+    && git -C /tmp/mesa-switch fetch -q --depth 1 ${MESA_SWITCH_REPOSITORY} ${MESA_SWITCH_REVISION} \
+    && git -C /tmp/mesa-switch checkout -q FETCH_HEAD \
+    && cd /tmp/mesa-switch && DESTDIR=/tmp/nvk-stage bash /usr/local/share/switch-dev/mesa-build-vulkan.sh
+
+# --- Image ---------------------------------------------------------------------
+FROM ${LEGACY_IMAGE}
+
+ARG LEGACY_IMAGE
+ARG MESA_SWITCH_REVISION=0ff52079ca9e9e837ed27eb95a8d239f439a1864
+
+COPY --from=nvk /tmp/nvk-stage/opt/devkitpro/portlibs/switch/ /opt/devkitpro/portlibs/switch/
+
+# What this image holds, for a build to record: the legacy image's list plus NVK.
+RUN python3 - <<EOF
+import json
+path = "/opt/devkitpro/portlibs/switch/share/switch-dev.json"
+info = json.load(open(path))
+info["mesa_switch_nvk"] = "${MESA_SWITCH_REVISION}"
+json.dump(info, open(path, "w"), indent=2)
+open(path, "a").write("\n")
+EOF
+
+LABEL org.opencontainers.image.description="switch-dev-legacy (libnx, libdrm-nouveau-legacy, mesa-switch-legacy OpenGL, libusbhsfs, usbntfs) with mesa-switch NVK Vulkan" \
+      dev.tico.legacy-image=${LEGACY_IMAGE} \
+      dev.tico.mesa-switch-nvk=${MESA_SWITCH_REVISION}
+WORKDIR /work

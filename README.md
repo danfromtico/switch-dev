@@ -46,6 +46,25 @@ image on GitHub's amd64 and arm64 runners and publishes it as
 `ghcr.io/autorunhq/switch-dev:2026.09.28` and `:latest`
 (`.github/workflows/publish.yml`).
 
+## Legacy OpenGL with Vulkan
+
+`Dockerfile.legacy-vulkan` builds a second image on
+[switch-dev-legacy](https://github.com/danfromtico/switch-dev-legacy):
+its OpenGL (devkitPro's Mesa 20.1 through nvc0, and libdrm_nouveau) stays as
+it is, and mesa-switch's NVK is built beside it, Vulkan only
+(`mesa/build-vulkan.sh`). One program can link both and pick its renderer at
+run time: the Mesa internals NVK shares with the legacy OpenGL are renamed
+`mesa_nvk_*` in `libvulkan.a`, and the list is installed as
+`share/mesa-switch/nvk-renamed-symbols.txt`.
+
+```sh
+docker build -f Dockerfile.legacy-vulkan -t switch-dev-legacy-vulkan .
+```
+
+Pushing a tag such as `legacy-vulkan-2026.10.12` publishes
+`ghcr.io/autorunhq/switch-dev-legacy-vulkan:2026.10.12` and `:latest`
+(`.github/workflows/publish-legacy-vulkan.yml`).
+
 ## Licenses
 
 The Dockerfile and build scripts are MIT. What the image builds keeps its own
