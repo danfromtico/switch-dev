@@ -1,7 +1,7 @@
 # Build Dockerfile.legacy-vulkan (danfromtico/switch-dev-legacy's OpenGL with
 # mesa-switch's NVK beside it) for linux/amd64 and linux/arm64, each on its own
 # runner, and publish both under one tag to
-# ghcr.io/autorunhq/switch-dev-legacy-vulkan: a pushed tag legacy-vulkan-<date>
+# ghcr.io/danfromtico/switch-dev-legacy-vulkan: a pushed tag legacy-vulkan-<date>
 # publishes <date> (such as 2026.10.12), and latest.
 name: publish-legacy-vulkan
 on:
@@ -16,7 +16,7 @@ permissions:
   contents: read
   packages: write
 env:
-  IMAGE: ghcr.io/autorunhq/switch-dev-legacy-vulkan
+  IMAGE: ghcr.io/danfromtico/switch-dev-legacy-vulkan
   TAG: ${{ inputs.tag || github.ref_name }}
 jobs:
   build:

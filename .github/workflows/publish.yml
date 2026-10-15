@@ -1,5 +1,5 @@
 # Build the image for linux/amd64 and linux/arm64, each on its own runner, and
-# publish both under one tag to ghcr.io/autorunhq/switch-dev: the pushed tag,
+# publish both under one tag to ghcr.io/danfromtico/switch-dev: the pushed tag,
 # the date it is cut (such as 2026.09.28), and latest.
 name: publish
 on:
@@ -14,7 +14,7 @@ permissions:
   contents: read
   packages: write
 env:
-  IMAGE: ghcr.io/autorunhq/switch-dev
+  IMAGE: ghcr.io/danfromtico/switch-dev
   TAG: ${{ inputs.tag || github.ref_name }}
 jobs:
   build:

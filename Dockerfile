@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# autorunhq/switch-dev: devkitA64 with everything Autorun and other Horizon
+# danfromtico/switch-dev: devkitA64 with everything Autorun and other Horizon
 # ports build against, each from a pinned revision:
 #   libnx         switchbrew/libnx, newer than devkitPro's release
 #   mesa-switch   Mesa 26 for Horizon: EGL/OpenGL through nvc0 or Zink, NVK Vulkan
@@ -119,7 +119,7 @@ RUN printf '{\n  "devkita64": "%s",\n  "libnx": "%s",\n  "mesa_switch": "%s",\n 
         ${LSFG_VK_REVISION} ${LIBUSBHSFS_REVISION} ${RUST_TOOLCHAIN} \
         > /opt/devkitpro/portlibs/switch/share/switch-dev.json
 
-LABEL org.opencontainers.image.source=https://github.com/autorunhq/switch-dev \
+LABEL org.opencontainers.image.source=https://github.com/danfromtico/switch-dev \
       org.opencontainers.image.description="devkitA64 with libnx, mesa-switch, lsfg-vk and libusbhsfs for Horizon" \
       dev.autorun.libnx=${LIBNX_REVISION} \
       dev.autorun.mesa-switch=${MESA_SWITCH_REVISION} \

@@ -27,7 +27,7 @@ and so do the image's labels.
 ## Use
 
 ```sh
-docker run --rm -v "$PWD:/work" ghcr.io/autorunhq/switch-dev make
+docker run --rm -v "$PWD:/work" ghcr.io/danfromtico/switch-dev make
 ```
 
 The image is built for `linux/amd64` and `linux/arm64`, each natively on its
@@ -36,14 +36,14 @@ own runner.
 ## Build
 
 ```sh
-docker build --platform linux/arm64 -t ghcr.io/autorunhq/switch-dev .
+docker build --platform linux/arm64 -t ghcr.io/danfromtico/switch-dev .
 ```
 
 To change a revision, edit its `ARG` in the `Dockerfile`.
 
 Pushing a tag named for the day it is cut, such as `2026.09.28`, builds the
 image on GitHub's amd64 and arm64 runners and publishes it as
-`ghcr.io/autorunhq/switch-dev:2026.09.28` and `:latest`
+`ghcr.io/danfromtico/switch-dev:2026.09.28` and `:latest`
 (`.github/workflows/publish.yml`).
 
 ## Legacy OpenGL with Vulkan
@@ -62,7 +62,7 @@ docker build -f Dockerfile.legacy-vulkan -t switch-dev-legacy-vulkan .
 ```
 
 Pushing a tag such as `legacy-vulkan-2026.10.12` publishes
-`ghcr.io/autorunhq/switch-dev-legacy-vulkan:2026.10.12` and `:latest`
+`ghcr.io/danfromtico/switch-dev-legacy-vulkan:2026.10.12` and `:latest`
 (`.github/workflows/publish-legacy-vulkan.yml`).
 
 ## Licenses
